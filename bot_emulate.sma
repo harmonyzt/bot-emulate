@@ -10,17 +10,18 @@ new MaxPlayers;
 new players_online = 0;
 
 // From 1 to 100
+// This describes how populated server is and bots will to play. The higher the number, the higher the chances of a bot to join the server.
 new popularity = 80;
-new will_to_play = 80;
+new will_to_play[32] = 50;
 
 public plugin_init(){
-	register_plugin("Bot Emulation", "0.1dev", "harmony");
+	register_plugin("Bot Decision Overhaul", "0.2dev", "harmony");
 	//register_logevent("RoundStart", 2, "1=Round_Start");
-	//register_event("DeathMsg", "DeathEvent", "a");
+ register_event("DeathMsg", "DeathEvent", "a");
 
 	MaxPlayers = get_maxplayers();
 
-	set_task(random_float(15.0, 60.0), "bot_join_leave",_,_,_, "b");
+	set_task(random_float(25.0, 150.0), "bot_think",_,_,_, "b");
 }
 
 public client_putinserver(id){
@@ -31,12 +32,12 @@ public client_disconnect(id){
 	players_online--
 }
 
-public bot_join_leave(){
+public bot_think(){
 	if(players_online < MaxPlayers){
-		if(popularity > 50){
-			addbot(random_num(1,2), random_num(85,100))
+		if(popularity > 80){
+			addbot(random_num(1,2), random_num(65,100))
 		} else {
-			addbot(1, random_num(1,100))
+			addbot(1, random_num(10,100))
 		}
 	}
 
@@ -45,9 +46,9 @@ public bot_join_leave(){
 			return;
 
 		if(popularity > 50 && will_to_play > random_num(1,100)){
-			
+   // Do nothing
 		} else {
-			leavebot(id);
+			botLeave(id);
 		}
 	}
 }
@@ -62,9 +63,13 @@ public addbot(amount, skill){
 	}
 }
 
-public leavebot(id){
+public botLeave(id){
 	new name[32];
 	get_user_name(id, name, 31);
 
 	server_cmd("amx_kick #%s ^"Left^"", name);
+}
+
+public DeathEvent(){
+
 }
