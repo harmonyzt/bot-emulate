@@ -10,12 +10,19 @@ new MaxPlayers;
 new players_online = 0;
 
 // From 1 to 100
-// This describes how populated server is and bot's will to play. The higher the number, the higher the chances of a bot to join the server and not leave.
+// This describes how populated server is and bot's will to play. The higher the number, the higher the chances of a bot to join the server and stay.
 new popularity = 80;
+
+// Scales dynamically. Score, deaths and K/D ratio of a bot will affect this.
 new will_to_play[32] = 50;
 
+// Extra info for calculations
+new deaths[32];
+new kills[32];
+new float:kd_ratio[32];
+
 public plugin_init() {
-    register_plugin("Bot Decision Overhaul", "0.3dev", "harmony");
+    register_plugin("Bot Decisions Overhauled", "0.4dev", "harmony");
     //register_logevent("RoundStart", 2, "1=Round_Start");
     register_event("DeathMsg", "DeathEvent", "a");
 
@@ -26,16 +33,22 @@ public plugin_init() {
 
 public client_putinserver(id) {
     players_online++
+    
+    deaths[id] = 0
+    kills = 0
 }
 
 public client_disconnect(id) {
     players_online--
+    
+    deaths[id] = 0
+    kills = 0
 }
 
 public bot_think(altID) {
     
-    // If the function was called with alternative ID of a bot to decide,, pass it here
-    if(altID && will_to_play[altID] < random_num(1, 100)){
+    // If the function was called with alternative ID of a bot to decide, pass it here
+    if(altID){
         botLeave(altID);
     }
     
@@ -50,7 +63,7 @@ public bot_think(altID) {
     for (new id = 1; id <= MaxPlayers; id++) {
         if (!is_user_bot(id) || altID)
             return;
-
+        // If popularity is too low, bot will decide to leave.
         if (popularity < 50 && will_to_play[id] < random_num(1, 100)) {
             botLeave(id);
         }
@@ -81,12 +94,12 @@ public DeathEvent() {
     if(!is_user_bot(victim) || !is_user_bot(attacker))
         return;
     
-    will_to_play[victim] -= 3;
+    will_to_play[victim] -= 3
+    // Dopamine rush for a killer
     will_to_play[attacker] += 2;
     
-    // Force bot to take the action if will  to play is too low
+    // Force bot to take the action if will  to play gets too low
     if(will_to_play[victim] < 5){
         bot_think(victim);
     }
-    
 }
