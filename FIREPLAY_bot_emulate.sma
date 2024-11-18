@@ -11,7 +11,7 @@ new players_online = 0;
 
 // From 1 to 100
 // This describes how populated server is and bot's will to play. The higher the number, the higher the chances of a bot to join the server and stay.
-new popularity = 80;
+new popularity = 83;
 
 // Scales dynamically. Score, deaths and K/D ratio of a bot will affect this.
 new will_to_play[32] = 50;
@@ -19,10 +19,9 @@ new will_to_play[32] = 50;
 // Extra info for calculations
 new deaths[32];
 new kills[32];
-new float:kd_ratio[32];
 
 public plugin_init() {
-    register_plugin("Bot Decisions Overhauled", "0.4dev", "harmony");
+    register_plugin("Bot Decisions Overhauled", "0.5dev", "harmony");
     //register_logevent("RoundStart", 2, "1=Round_Start");
     register_event("DeathMsg", "DeathEvent", "a");
 
@@ -35,14 +34,19 @@ public client_putinserver(id) {
     players_online++
     
     deaths[id] = 0
-    kills = 0
+    kills[id] = 0
+
+
+    if(players_online > 29 && is_user_bot(id)){
+        botLeave(id);
+    }
 }
 
 public client_disconnect(id) {
     players_online--
     
     deaths[id] = 0
-    kills = 0
+    kills[id] = 0
 }
 
 public bot_think(altID) {
@@ -54,7 +58,7 @@ public bot_think(altID) {
     
     if (players_online < MaxPlayers && !altID) {
         if (popularity > 80) {
-            addBot(random_num(1, 2), random_num(65, 100))
+            addBot(random_num(1, 2), random_num(75, 100))
         } else {
             addBot(1, random_num(10, 100))
         }
