@@ -35,11 +35,6 @@ public client_putinserver(id) {
     
     deaths[id] = 0
     kills[id] = 0
-
-
-    if(players_online > 29 && is_user_bot(id)){
-        botLeave(id);
-    }
 }
 
 public client_disconnect(id) {
@@ -70,6 +65,10 @@ public bot_think(altID) {
         // If popularity is too low, bot will decide to leave.
         if (popularity < 50 && will_to_play[id] < random_num(1, 100)) {
             botLeave(id);
+        }
+
+        if(players_online > 29 && is_user_bot(id)){
+        botLeave(id);
         }
     }
 }
