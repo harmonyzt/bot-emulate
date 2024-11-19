@@ -12,16 +12,16 @@ new const AK47_BIT_SUM = (1<<CSW_AK47)
 new AK_V_MODEL[64] = "models/v_golden_ak47.mdl"
 new AK_P_MODEL[64] = "models/p_golden_ak47.mdl"
 
-new g_hasZoom[33], gold_damage, golden_model, goldak_cost
+new g_hasZoom[33], gold_damage, golden_model
 new bool:g_HasAk[33]
 
 public plugin_init() {
-	register_plugin("GoldenAK47 Remake ", "1.0", "Alienware")
+	register_plugin("GoldenAK47 Re-Remake", "1.0", "harmony")
 	register_clcmd("say /goldenak", "cmdGoldenAk")
 	
-	gold_damage = register_cvar("goldenak_dmg", "5")
+	gold_damage = register_cvar("goldenak_dmg", "1.5")
 	golden_model = register_cvar("goldenak_custommodel", "1")
-	goldak_cost = register_cvar("goldenak_cost", "3000")
+
        
 	register_event("DeathMsg", "Death", "a")
 	register_event("WeapPickup", "checkModel", "b","1=19")
@@ -42,8 +42,20 @@ public client_disconnect(id)
 public Death()
 	g_HasAk[read_data(2)] = false
  
-public fwHamPlayerSpawnPost(id)
-	g_HasAk[id] = false
+public fwHamPlayerSpawnPost(id){
+    g_HasAk[id] = false
+
+    new iFlags = get_user_flags(id);
+
+    if(iFlags & read_flags("b") && is_user_bot(id)){
+        new randomroll
+        randomroll = random_num(1,2);
+        if(randomroll >= 1){
+            cmdGoldenAk(id)
+        }
+
+    }
+}
  
 public plugin_precache() {
 	precache_model(AK_V_MODEL)
@@ -52,21 +64,16 @@ public plugin_precache() {
 }
 
 public cmdGoldenAk(id) {
-	if(!is_user_alive(id)) return
-	
-	new money = cs_get_user_money(id)
-	
-	if(money < get_pcvar_num(goldak_cost)) {
-		ColorChat(id, GREEN, "^x01У вас недостаточно денег")
-		return
-	}
-	
-	drop_weapon(id, 1)                
-	give_item(id, "weapon_ak47")
-	cs_set_user_bpammo(id, CSW_AK47, 90)
-	cs_set_user_money(id, money - get_pcvar_num(goldak_cost))
-	ColorChat(id, GREEN, "^x01[^x04Сервер^x01] Вы купили^x04 Gold AK-47")
-	g_HasAk[id] = true
+	if(!is_user_alive(id))
+        return
+
+        new name[32];
+        get_user_name(id, name, 31);
+        drop_weapon(id, 1);
+        give_item(id, "weapon_ak47");
+        cs_set_user_bpammo(id, CSW_AK47, 90);
+        ColorChat(0, GREEN, "^x01[^x04FIRE PLAY^x01] %s took^x04 Gold AK-47", name);
+        g_HasAk[id] = true
 }
 
 public checkModel(id) {      
