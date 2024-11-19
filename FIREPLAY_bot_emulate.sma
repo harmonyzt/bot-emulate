@@ -53,22 +53,22 @@ public bot_think(altID) {
     
     if (players_online < MaxPlayers && !altID) {
         if (popularity > 80) {
-            addBot(random_num(1, 2), random_num(75, 100))
+            addBot(random_num(1, 2), random_num(55, 90))
         } else {
             addBot(1, random_num(10, 100))
         }
     }
 
     for (new id = 1; id <= MaxPlayers; id++) {
-        if (!is_user_bot(id) || altID)
+        if (!is_user_bot(id) && !is_user_connected(id) || altID)
             return;
         // If popularity is too low, bot will decide to leave.
         if (popularity < 50 && will_to_play[id] < random_num(1, 100)) {
             botLeave(id);
         }
 
-        if(players_online > 29 && is_user_bot(id)){
-        botLeave(id);
+        if(players_online > 29 && will_to_play[id] < 20){
+            botLeave(id);
         }
     }
 }
