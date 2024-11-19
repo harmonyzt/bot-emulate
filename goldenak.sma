@@ -17,9 +17,8 @@ new bool:g_HasAk[33]
 
 public plugin_init() {
 	register_plugin("GoldenAK47 Re-Remake", "1.0", "harmony")
-	register_clcmd("say /goldenak", "cmdGoldenAk")
 	
-	gold_damage = register_cvar("goldenak_dmg", "1.5")
+	gold_damage = register_cvar("goldenak_dmg", "1.7")
 	golden_model = register_cvar("goldenak_custommodel", "1")
 
        
@@ -72,7 +71,7 @@ public cmdGoldenAk(id) {
         drop_weapon(id, 1);
         give_item(id, "weapon_ak47");
         cs_set_user_bpammo(id, CSW_AK47, 90);
-        ColorChat(0, GREEN, "^x01[^x04FIRE PLAY^x01] %s took^x04 Gold AK-47", name);
+        ColorChat(0, GREEN, "[FIRE PLAY] %s took Gold AK-47", name);
         g_HasAk[id] = true
 }
 

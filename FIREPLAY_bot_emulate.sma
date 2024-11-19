@@ -92,17 +92,20 @@ public botLeave(id) {
 
 public DeathEvent() {
     new victim = read_data(1);
-    new attacker = read_data(2);
+    new killer = read_data(2);
+
+    if(!is_user_connected(killer))	// [Player out of range (0)]
+		return PLUGIN_HANDLED
     
-    if(!is_user_bot(victim) || !is_user_bot(attacker))
-        return;
-    
-    will_to_play[victim] -= 3
-    // Dopamine rush for a killer
-    will_to_play[attacker] += 2;
-    
-    // Force bot to take the action if will  to play gets too low
-    if(will_to_play[victim] < 5){
-        bot_think(victim);
+    if(killer != victim && is_user_connected(killer) && is_user_connected(victim)){
+        will_to_play[victim] -= 3;
+        // Dopamine rush for a killer
+        will_to_play[killer] += 2;
+        
+        // Force bot to take the action if will  to play gets too low
+        if(will_to_play[victim] < 5){
+            bot_think(victim);
+        }
     }
+    return PLUGIN_CONTINUE;
 }
